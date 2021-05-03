@@ -79,10 +79,24 @@ const resetGame = () => {
   window.location = '/sharkwords';
 };
 
-const endOfGame = () => {
-  if ($(`div.letter-box).innerText`)!=""){
-    console.log("success!");
+const endOfGame = (word) => {
+
+  for (const letter of word){
+    const firstLetterDiv = $(`div.${letter}`)[0];
+    if (firstLetterDiv.innerHTML !== letter){
+      return false;
+    }
   }
+  return true;
+}
+
+const handleWin = () => {
+  $('img').attr('src',`/static/images/guess0.png`);
+  $('button').attr('disabled',true);
+  $('#play-again').html("🎉Yay! You won! Click here to play again!");
+  $('#play-again').css('color','green');
+  $('#play-again').show();
+
 }
 
 // This is like if __name__ == '__main__' in Python
@@ -96,12 +110,15 @@ const endOfGame = () => {
   
   $('button').on('click', (evt)=>{
     const letterGuessed = evt.target;
+    disableLetterButton(letterGuessed);
     if(isLetterInWord(letterGuessed.innerText)){
       handleCorrectGuess(letterGuessed);
     }else{
       handleWrongGuess();
     }
-    disableLetterButton(letterGuessed);
+    if(endOfGame(word)){
+      handleWin();
+    }
   });
 
   $('#play-again').on('click',resetGame);
